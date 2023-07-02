@@ -1,9 +1,14 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        backgroundColor: '#1f1e25',
+    checkbox:{
+        marginLeft: 16,
+        borderRadius: 20,        
+    },
+    lista: {
+        width: 300,
+        height: 56,
+        backgroundColor: '#333',
         borderRadius: 5,        
         flexDirection: 'row',
         alignItems: 'center',
@@ -15,15 +20,21 @@ export const styles = StyleSheet.create({
         marginLeft: 16,
         color: '#fff',
     },
+    nameOff:{
+        flex: 1,
+        fontSize: 16,
+        marginLeft: 16,
+        color: '#808080',
+        textDecorationLine: 'line-through',
+    },
     buttonText: {
         color: '#fff',
         fontSize: 24,
     },
-    button: {
-        width: 56,
-        height: 56,
-        borderRadius: 5,
-        backgroundColor: '#e23c44',
+    remove: {
+        width: 45,
+        height: 45,
+        marginRight: 5,
         justifyContent: 'center',
         alignItems: 'center',
     },
