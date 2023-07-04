@@ -7,16 +7,31 @@ import { FontAwesome } from '@expo/vector-icons'; // expo install @expo/vector-i
 type Props = {
     name: string;
     selected: () => void;
-    onRemove?: () => void;
+    deselected: () => void;
+    onRemove: () => void;
 }
 
-export function ItemList({ name, onRemove, selected }: Props) {
+
+
+export function ItemList({ name, onRemove, selected, deselected }: Props) {
     const [toggleCheckBox, setToggleCheckBox] = useState(false)
+
+    function removeItem() {
+        onRemove();
+    }
+
+    function isSelected() {
+        if (!toggleCheckBox) {
+            selected();
+        } else {
+            deselected();
+        }
+    }
 
     return (
         <TouchableOpacity
             style={styles.lista}
-            onPress={() => {setToggleCheckBox(!toggleCheckBox); selected;}}>
+            onPress={() => {isSelected(); setToggleCheckBox(!toggleCheckBox);}}>
             <Checkbox
                 color={!toggleCheckBox ? '#4EA8DE' : '#8284FA'}
                 style={styles.checkbox}
@@ -27,7 +42,7 @@ export function ItemList({ name, onRemove, selected }: Props) {
             <Text style={!toggleCheckBox ? styles.name : styles.nameOff}>
                 {name}
             </Text>
-            <TouchableOpacity style={styles.remove} onPress={onRemove}>
+            <TouchableOpacity style={styles.remove} onPress={() => removeItem()}>
                 <FontAwesome name="trash-o" color="gray" size={20} />
             </TouchableOpacity>
         </TouchableOpacity>
