@@ -8,20 +8,18 @@ type Props = {
     name: string;
     selected: () => void;
     deselected: () => void;
+    completed: boolean;
     onRemove: () => void;
 }
 
-
-
-export function ItemList({ name, onRemove, selected, deselected }: Props) {
-    const [toggleCheckBox, setToggleCheckBox] = useState(false)
+export function ItemList({ name, onRemove, selected, deselected, completed }: Props) {
 
     function removeItem() {
         onRemove();
     }
 
     function isSelected() {
-        if (!toggleCheckBox) {
+        if (!completed) {
             selected();
         } else {
             deselected();
@@ -31,15 +29,15 @@ export function ItemList({ name, onRemove, selected, deselected }: Props) {
     return (
         <TouchableOpacity
             style={styles.lista}
-            onPress={() => {isSelected(); setToggleCheckBox(!toggleCheckBox);}}>
+            onPress={() => isSelected()}>
             <Checkbox
-                color={!toggleCheckBox ? '#4EA8DE' : '#8284FA'}
+                color={!completed ? '#4EA8DE' : '#8284FA'}
                 style={styles.checkbox}
                 disabled={false}
-                value={toggleCheckBox}
-                onValueChange={(newValue) => {setToggleCheckBox(newValue); selected}}
+                value={completed}
+                onValueChange={() => selected()}
             />
-            <Text style={!toggleCheckBox ? styles.name : styles.nameOff}>
+            <Text style={!completed ? styles.name : styles.nameOff}>
                 {name}
             </Text>
             <TouchableOpacity style={styles.remove} onPress={() => removeItem()}>

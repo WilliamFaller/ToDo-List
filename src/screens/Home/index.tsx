@@ -6,50 +6,66 @@ import { ItemList } from '../../components/ItemList';
 
 export default function Home() {
 
-    const [toDoList, setToDoList] = useState<string[]>([]);
+    const [toDoList, setToDoList] = useState<{ name: string; completed: boolean }[]>([]);
     const [toDoName, setToDoName] = useState<string>('')
     const [concluidos, setConcluidos] = useState<number>(0)
     const [criados, setCriados] = useState<number>(0)
 
     function handleChangeText(text: string) {
         if (text === ' ') {
-            setToDoName('')
+            setToDoName('');
         } else {
-            setToDoName(text)
+            setToDoName(text);
         }
     }
 
-    function handleParticipantRemove(name: string) {
-        Alert.alert('Remover participante', `Deseja remover ${name} da lista de participantes?`, [{
-            text: 'Sim',
-            onPress: () => {setToDoList(toDoList.filter(task => task !== name));
-                deletar()},
-        },
-        {
-            text: 'Não',
-            style: 'cancel'
+    function handleParticipantRemove(name: string, completed: boolean) {
+        if (completed) {
+            Alert.alert('Tarefa concluída', 'Não é possível excluir uma tarefa que está marcada como concluída.');
+            return;
         }
-        ])
+
+        Alert.alert('Remover participante', `Deseja remover ${name} da lista de participantes?`, [
+            {
+                text: 'Sim',
+                onPress: () => {
+                    setToDoList(toDoList.filter(task => task.name !== name));
+                    deletar();
+                },
+            },
+            {
+                text: 'Não',
+                style: 'cancel',
+            },
+        ]);
     }
 
     function handleTodoAdd() {
         if (toDoName === '') {
-            return Alert.alert('Tarefa sem nome', 'Por favor, insira um nome para a tarefa.')
+            return Alert.alert('Tarefa sem nome', 'Por favor, insira um nome para a tarefa.');
         }
-        if (toDoList.includes(toDoName)) {
-            return Alert.alert('Tarefa existente', 'Por favor, insira um nome diferente para esta tarefa.')
+
+        if (toDoList.find(task => task.name === toDoName)) {
+            return Alert.alert('Tarefa existente', 'Por favor, insira um nome diferente para esta tarefa.');
         }
-        setToDoList([...toDoList, toDoName])
-        criar()
-        setToDoName('')
+
+        setToDoList([...toDoList, { name: toDoName, completed: false }]);
+        criar();
+        setToDoName('');
     }
 
-    function select() {
-        setConcluidos(concluidos + 1);
+    function select(index: number) {
+        if (!toDoList[index].completed) {
+            setConcluidos(concluidos + 1);
+            toDoList[index].completed = true; // Mark the task as completed
+        }
     }
 
-    function deselect() {
-        setConcluidos(concluidos - 1);
+    function deselect(index: number) {
+        if (toDoList[index].completed) {
+            setConcluidos(concluidos - 1);
+            toDoList[index].completed = false; // Mark the task as not completed
+        }
     }
 
     function criar() {
@@ -79,16 +95,18 @@ export default function Home() {
                     </TouchableOpacity>
                 </View>
                 <Status totalCriados={criados} totalConcluidos={concluidos} />
-                <FlatList style={styles.lista}
-                    keyExtractor={item => item}
+                <FlatList
+                    style={styles.lista}
+                    keyExtractor={(_, index) => index.toString()}
                     data={toDoList}
-                    renderItem={({ item }) => (
+                    renderItem={({ item, index }) => (
                         <ItemList
-                            key={item}
-                            name={item}
-                            selected={() => select()}
-                            deselected={() => deselect()}
-                            onRemove={() => handleParticipantRemove(item)}
+                            key={index}
+                            name={item.name}
+                            completed={item.completed} // Pass the completed status as a prop
+                            selected={() => select(index)}
+                            deselected={() => deselect(index)}
+                            onRemove={() => handleParticipantRemove(item.name, item.completed)}
                         />
                     )}
                     showsVerticalScrollIndicator={false}
